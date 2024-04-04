@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/1.9.1/showdown.min.js"></script>
+    <link  class="icon"rel="icon" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcShl93v6kL6fsXx42ixg5I88ACn1jRONchMbg&usqp=CAU"  /
+    >
+    <title>Online Notes App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #afa6a6;
+        }
+        
+        #container {
+            max-width: 600px;
+            margin: 20px auto;
+            background-color: rgb(245, 199, 47);
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 20px rgb(255, 255, 255);
+            overflow-y: auto;
+            height: 400px; /* Set a fixed height for the container */
+            scroll-snap-type: y,x; /* Enable scroll snap behavior */
+            
+        }
+        
+        h1 {
+            text-align: center;
+        }
+        
+        input[type="text"], textarea {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        
+        button {
+            padding: 10px 20px;
+            background-color: #fa6e43;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width:100%;
+        }
+        
+        button:hover {
+            background-color: #cc740f;
+        }
+        
+        .note {
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+            scroll-snap-align: start; /* Snap each note to the top of the container */
+        }
+        
+        .note button {
+            margin-left: 10px;
+            background-color: #dc3545;
+            width:fit-content;
+        }
+
+        /* Fix for text going outside the container */
+        .note h3,
+        .note p {
+            word-wrap: break-word;
+        }
+
+        #noteList{
+          margin:10px;
+        }
+    </style>
+</head>
+<body>
+  
+    <div id="container">
+        <h1>Online Notes App</h1>
+        <input type="text" id="searchInput" placeholder="Search notes..." oninput="searchNotes()">
+
+        <input type="text" id="noteTitle" placeholder="Enter note title">
+        <textarea id="noteContent" placeholder="Enter note content"></textarea>
+        <button onclick="saveNote()">Save Note</button>
+        <div id="noteList"></div>
+    </div>
+
+    <script>
+        let notes = [];
+
+        function saveNote() {
+            const title = document.getElementById('noteTitle').value;
+            const content = document.getElementById('noteContent').value;
+
+            if (title && content) {
+                const note = { title, content };
+                notes.push(note);
+                renderNotes();
+                document.getElementById('noteTitle').value = '';
+                document.getElementById('noteContent').value = '';
+            } else {
+                alert('Please enter both title and content for the note.');
+            }
+        }
+
+        function deleteNote(index) {
+            notes.splice(index, 1);
+            renderNotes();
+        }
+
+        function renderNotes() {
+            const noteList = document.getElementById('noteList');
+            noteList.innerHTML = '';
+
+            notes.forEach((note, index) => {
+                const noteElement = document.createElement('div');
+                noteElement.classList.add('note');
+
+                const titleElement = document.createElement('h3');
+                titleElement.textContent = note.title;
+
+                const contentElement = document.createElement('p');
+                contentElement.textContent = note.content;
+
+                const deleteButton = document.createElement('button');
+                deleteButton.textContent = 'Delete';
+                deleteButton.onclick = () => deleteNote(index);
+
+                noteElement.appendChild(titleElement);
+                noteElement.appendChild(contentElement);
+                noteElement.appendChild(deleteButton);
+
+                noteList.appendChild(noteElement);
+            });
+        }
+
+        function searchNotes() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const filteredNotes = notes.filter(note => {
+                return note.title.toLowerCase().includes(searchTerm) || note.content.toLowerCase().includes(searchTerm);
+            });
+            renderFilteredNotes(filteredNotes);
+        }
+
+        function renderFilteredNotes(filteredNotes) {
+            const noteList = document.getElementById('noteList');
+            noteList.innerHTML = '';
+
+            filteredNotes.forEach((note, index) => {
+                const noteElement = document.createElement('div');
+                noteElement.classList.add('note');
+
+                const titleElement = document.createElement('h3');
+                titleElement.textContent = note.title;
+
+                const contentElement = document.createElement('p');
+                contentElement.textContent = note.content;
+
+                const deleteButton = document.createElement('button');
+                deleteButton.textContent = 'Delete';
+                deleteButton.onclick = () => deleteNote(notes.indexOf(note));
+
+                noteElement.appendChild(titleElement);
+                noteElement.appendChild(contentElement);
+                noteElement.appendChild(deleteButton);
+
+                noteList.appendChild(noteElement);
+            });
+        }
+    </script>
+</body>
+</html>
