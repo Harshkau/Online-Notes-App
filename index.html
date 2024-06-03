@@ -4,8 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/1.9.1/showdown.min.js"></script>
-    <link  class="icon"rel="icon" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcShl93v6kL6fsXx42ixg5I88ACn1jRONchMbg&usqp=CAU"  /
-    >
+    <link class="icon" rel="icon" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcShl93v6kL6fsXx42ixg5I88ACn1jRONchMbg&usqp=CAU">
     <title>Online Notes App</title>
     <style>
         body {
@@ -13,19 +12,22 @@
             margin: 0;
             padding: 0;
             background-color: #afa6a6;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
         
         #container {
-            max-width: 600px;
-            margin: 20px auto;
+            width: 90%;
+            max-width: 800px;
             background-color: rgb(245, 199, 47);
             padding: 20px;
             border-radius: 5px;
             box-shadow: 0 0 20px rgb(255, 255, 255);
             overflow-y: auto;
-            height: 400px; /* Set a fixed height for the container */
-            scroll-snap-type: y,x; /* Enable scroll snap behavior */
-            
+            height: 90vh; /* Set a fixed height for the container */
+            scroll-snap-type: y proximity; /* Enable scroll snap behavior */
         }
         
         h1 {
@@ -48,7 +50,7 @@
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            width:100%;
+            width: 100%;
         }
         
         button:hover {
@@ -67,7 +69,7 @@
         .note button {
             margin-left: 10px;
             background-color: #dc3545;
-            width:fit-content;
+            width: fit-content;
         }
 
         /* Fix for text going outside the container */
@@ -76,17 +78,30 @@
             word-wrap: break-word;
         }
 
-        #noteList{
-          margin:10px;
+        #noteList {
+            margin: 10px;
+        }
+
+        @media (max-width: 600px) {
+            #container {
+                padding: 15px;
+            }
+
+            input[type="text"], textarea {
+                width: calc(100% - 15px);
+                padding: 8px;
+            }
+
+            button {
+                padding: 8px 15px;
+            }
         }
     </style>
 </head>
 <body>
-  
     <div id="container">
         <h1>Online Notes App</h1>
         <input type="text" id="searchInput" placeholder="Search notes..." oninput="searchNotes()">
-
         <input type="text" id="noteTitle" placeholder="Enter note title">
         <textarea id="noteContent" placeholder="Enter note content"></textarea>
         <button onclick="saveNote()">Save Note</button>
