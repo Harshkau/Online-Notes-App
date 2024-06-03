@@ -3,193 +3,86 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/1.9.1/showdown.min.js"></script>
-    <link class="icon" rel="icon" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcShl93v6kL6fsXx42ixg5I88ACn1jRONchMbg&usqp=CAU">
-    <title>Online Notes App</title>
+    <link rel="icon" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcScpTAMeQjLQulMqrCO-zDYiVnLV2ywnlVygA&s">
+
+    <title>Notes App</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
         body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #afa6a6;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        
-        #container {
-            width: 90%;
-            max-width: 800px;
-            background-color: rgb(245, 199, 47);
-            padding: 20px;
-            border-radius: 5px;
-            box-shadow: 0 0 20px rgb(255, 255, 255);
-            overflow-y: auto;
-            height: 90vh; /* Set a fixed height for the container */
-            scroll-snap-type: y proximity; /* Enable scroll snap behavior */
-        }
-        
-        h1 {
-            text-align: center;
-        }
-        
-        input[type="text"], textarea {
-            width: calc(100% - 20px);
-            padding: 10px;
-            margin-bottom: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            font-size: 16px;
-        }
-        
-        button {
-            padding: 10px 20px;
-            background-color: #fa6e43;
-            color: #fff;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            width: 100%;
-        }
-        
-        button:hover {
-            background-color: #cc740f;
-        }
-        
-        .note {
-            margin-bottom: 10px;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            background-color: #f9f9f9;
-            scroll-snap-align: start; /* Snap each note to the top of the container */
-        }
-        
-        .note button {
-            margin-left: 10px;
-            background-color: #dc3545;
-            width: fit-content;
-        }
+            background: rgb(238,174,202);
+background: radial-gradient(circle, rgba(238,174,202,1) 0%, rgba(148,187,233,1) 100%);}
 
-        /* Fix for text going outside the container */
-        .note h3,
-        .note p {
-            word-wrap: break-word;
-        }
+.card {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    background: rgb(54, 87, 220);
 
-        #noteList {
-            margin: 10px;
-        }
+}
 
-        @media (max-width: 600px) {
-            #container {
-                padding: 15px;
-            }
+.note {
+    background-color: rgb(84, 204, 98);
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    position: relative;
+}
 
-            input[type="text"], textarea {
-                width: calc(100% - 15px);
-                padding: 8px;
-            }
+.note .delete {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
+    color: #dc3545;
+}
 
-            button {
-                padding: 8px 15px;
-            }
-        }
     </style>
 </head>
 <body>
-    <div id="container">
-        <h1>Online Notes App</h1>
-        <input type="text" id="searchInput" placeholder="Search notes..." oninput="searchNotes()">
-        <input type="text" id="noteTitle" placeholder="Enter note title">
-        <textarea id="noteContent" placeholder="Enter note content"></textarea>
-        <button onclick="saveNote()">Save Note</button>
-        <div id="noteList"></div>
+    <div class="container mt-5">
+        <h1 class="text-center">Notes App</h1>
+        <div class="card mt-4">
+            <div class="card-body">
+                <h5 class="card-title">Add a New Note</h5>
+                <div class="form-group">
+                    <textarea id="noteInput" class="form-control" rows="3" placeholder="Write your note here..."></textarea>
+                </div>
+                <button id="addNoteBtn" class="btn btn-primary">Add Note</button>
+            </div>
+        </div>
+        <h3 class="mt-4">Your Notes</h3>
+        <div id="notes" class="mt-3"></div>
     </div>
+    
+    <script >
+        document.addEventListener("DOMContentLoaded", function() {
+    const notesContainer = document.getElementById("notes");
+    const noteInput = document.getElementById("noteInput");
+    const addNoteBtn = document.getElementById("addNoteBtn");
 
-    <script>
-        let notes = [];
-
-        function saveNote() {
-            const title = document.getElementById('noteTitle').value;
-            const content = document.getElementById('noteContent').value;
-
-            if (title && content) {
-                const note = { title, content };
-                notes.push(note);
-                renderNotes();
-                document.getElementById('noteTitle').value = '';
-                document.getElementById('noteContent').value = '';
-            } else {
-                alert('Please enter both title and content for the note.');
-            }
+    addNoteBtn.addEventListener("click", function() {
+        const noteText = noteInput.value.trim();
+        if (noteText) {
+            addNote(noteText);
+            noteInput.value = "";
         }
+    });
 
-        function deleteNote(index) {
-            notes.splice(index, 1);
-            renderNotes();
-        }
+    function addNote(text) {
+        const note = document.createElement("div");
+        note.className = "note";
+        note.innerHTML = `
+            <p>${text}</p>
+            <span class="delete">&times;</span>
+        `;
 
-        function renderNotes() {
-            const noteList = document.getElementById('noteList');
-            noteList.innerHTML = '';
+        note.querySelector(".delete").addEventListener("click", function() {
+            note.remove();
+        });
 
-            notes.forEach((note, index) => {
-                const noteElement = document.createElement('div');
-                noteElement.classList.add('note');
+        notesContainer.appendChild(note);
+    }
+});
 
-                const titleElement = document.createElement('h3');
-                titleElement.textContent = note.title;
-
-                const contentElement = document.createElement('p');
-                contentElement.textContent = note.content;
-
-                const deleteButton = document.createElement('button');
-                deleteButton.textContent = 'Delete';
-                deleteButton.onclick = () => deleteNote(index);
-
-                noteElement.appendChild(titleElement);
-                noteElement.appendChild(contentElement);
-                noteElement.appendChild(deleteButton);
-
-                noteList.appendChild(noteElement);
-            });
-        }
-
-        function searchNotes() {
-            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-            const filteredNotes = notes.filter(note => {
-                return note.title.toLowerCase().includes(searchTerm) || note.content.toLowerCase().includes(searchTerm);
-            });
-            renderFilteredNotes(filteredNotes);
-        }
-
-        function renderFilteredNotes(filteredNotes) {
-            const noteList = document.getElementById('noteList');
-            noteList.innerHTML = '';
-
-            filteredNotes.forEach((note, index) => {
-                const noteElement = document.createElement('div');
-                noteElement.classList.add('note');
-
-                const titleElement = document.createElement('h3');
-                titleElement.textContent = note.title;
-
-                const contentElement = document.createElement('p');
-                contentElement.textContent = note.content;
-
-                const deleteButton = document.createElement('button');
-                deleteButton.textContent = 'Delete';
-                deleteButton.onclick = () => deleteNote(notes.indexOf(note));
-
-                noteElement.appendChild(titleElement);
-                noteElement.appendChild(contentElement);
-                noteElement.appendChild(deleteButton);
-
-                noteList.appendChild(noteElement);
-            });
-        }
     </script>
 </body>
 </html>
